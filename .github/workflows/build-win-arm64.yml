@@ -37,30 +37,30 @@ jobs:
           Write-Host "Source files copied successfully"
           
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
           
       - name: Cache OpenCV
         id: cache-opencv
         uses: actions/cache@v4
         with:
           path: C:\opencv-build
-          key: opencv-4.13.0-arm64-native-v3-${{ runner.os }}
+          key: opencv-4.11.0-arm64-native-v3-${{ runner.os }}
           
       - name: Clone OpenCV
         if: steps.cache-opencv.outputs.cache-hit != 'true'
         shell: powershell
         run: |
           Set-Location C:\
-          git clone --depth 1 --branch 4.13.0 https://github.com/opencv/opencv.git
-          git clone --depth 1 --branch 4.13.0 https://github.com/opencv/opencv_contrib.git
+          git clone --depth 1 --branch 4.11.0 https://github.com/opencv/opencv.git
+          git clone --depth 1 --branch 4.11.0 https://github.com/opencv/opencv_contrib.git
 
-      - name: Setup vcpkg and install packages
+      - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:          
           runVcpkgInstall: false          
 
-      - name: Install CMake
-        uses: lukka/get-cmake@latest
+      # - name: Install CMake
+      #   uses: lukka/get-cmake@latest
 
       - name: Install dependencies via vcpkg
         if: steps.cache-opencv.outputs.cache-hit != 'true'
