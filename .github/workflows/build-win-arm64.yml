@@ -5,6 +5,10 @@ on:
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
+
+permissions:
+  packages: write
+
 jobs:
   build-opencv-arm64:
     runs-on: windows-11-arm
@@ -40,16 +44,24 @@ jobs:
         uses: actions/cache@v4
         with:
           path: C:\opencv-build
-          key: opencv-4.11.0-arm64-native-v3-${{ runner.os }}
+          key: opencv-4.13.0-arm64-native-v3-${{ runner.os }}
           
       - name: Clone OpenCV
         if: steps.cache-opencv.outputs.cache-hit != 'true'
         shell: powershell
         run: |
           Set-Location C:\
-          git clone --depth 1 --branch 4.11.0 https://github.com/opencv/opencv.git
-          git clone --depth 1 --branch 4.11.0 https://github.com/opencv/opencv_contrib.git
-          
+          git clone --depth 1 --branch 4.13.0 https://github.com/opencv/opencv.git
+          git clone --depth 1 --branch 4.13.0 https://github.com/opencv/opencv_contrib.git
+
+      - name: Setup vcpkg and install packages
+        uses: lukka/run-vcpkg@v11
+        with:          
+          runVcpkgInstall: false          
+
+      - name: Install CMake
+        uses: lukka/get-cmake@latest
+
       - name: Install dependencies via vcpkg
         if: steps.cache-opencv.outputs.cache-hit != 'true'
         shell: powershell
